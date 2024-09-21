@@ -68,6 +68,35 @@ namespace Standings.Persistence.Contexts
             );
 
         }
+        //Seed data olaraq bir admin ve bir moderator yaratmaq
+        public async Task SeedData(UserManager<User> userManager)
+        {
+            // Admin istifadəçisini yaratmaq
+            if (await userManager.FindByEmailAsync("admin@example.com") == null)
+            {
+                var adminUser = new User
+                {
+                    UserName = "admin@example.com",
+                    Email = "admin@example.com",
+                };
+
+                await userManager.CreateAsync(adminUser, "AdminPassword123!");
+                await userManager.AddToRoleAsync(adminUser, "Admin");
+            }
+
+            // Moderator istifadəçisini yaratmaq
+            if (await userManager.FindByEmailAsync("moderator@example.com") == null)
+            {
+                var moderatorUser = new User
+                {
+                    UserName = "moderator@example.com",
+                    Email = "moderator@example.com",
+                };
+
+                await userManager.CreateAsync(moderatorUser, "ModeratorPassword123!");
+                await userManager.AddToRoleAsync(moderatorUser, "Moderator");
+            }
+        }
     }
 
 }

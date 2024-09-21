@@ -8,6 +8,12 @@ using System.Text;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using MentorApi.Extensions;
+using Microsoft.AspNetCore.Identity;
+using Standings.Domain.Entities.AppDbContextEntity;
+using Standings.Persistence.Contexts;
+using FluentValidation.AspNetCore;
+using FluentValidation;
+using Standings.Application.Validations.StudentValid;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -98,7 +104,21 @@ Log.Logger = new LoggerConfiguration()
 
 // Serilog-u ASP.NET Core üçün istifadə edirik
 builder.Host.UseSerilog();
+// Add FluentValidation and scan for validators in the assembly
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddValidatorsFromAssemblyContaining<StudentCreateDTOValidator>();
+
 var app = builder.Build();
+// Verilənlər bazasını yaradın və seed data əlavə edin
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+        var context = services.GetRequiredService<AppDbContext>();
+        var userManager = services.GetRequiredService<UserManager<User>>();
+
+        // Seed data çağırılır
+        await context.SeedData(userManager);   
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
