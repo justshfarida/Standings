@@ -21,6 +21,7 @@ namespace Standings.API.Controllers
         }
 
         [HttpGet]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin, Moderator, Student")]
         public async Task<ActionResult<Response<List<StudentGetDTO>>>> GetAll()
         {
             var response = await _studentService.GetAllStudents();
@@ -28,6 +29,8 @@ namespace Standings.API.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin, Moderator, Student")]
+
         public async Task<ActionResult<Response<StudentGetDTO>>> GetById(int id)
         {
             var response = await _studentService.GetStudentById(id);
@@ -35,6 +38,8 @@ namespace Standings.API.Controllers
         }
 
         [HttpGet("group/{groupId}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin, Moderator, Student")]
+
         public async Task<ActionResult<Response<List<StudentGetDTO>>>> GetByGroupId(int groupId)
         {
             var response = await _studentService.StudentsByGroupId(groupId);
@@ -42,6 +47,8 @@ namespace Standings.API.Controllers
         }
 
         [HttpGet("year/{year}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin, Moderator, Student")]
+
         public async Task<ActionResult<Response<List<StudentGetDTO>>>> GetByYear(int year)
         {
             var response = await _studentService.StudentsByYear(year);

@@ -6,12 +6,6 @@ using Standings.Application.Interfaces.IServices;
 using Standings.Application.Interfaces.IUnitOfWorks;
 using Standings.Application.Models.ResponseModels;
 using Standings.Domain.Entities.AppDbContextEntity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Standings.Persistence.Implementations.Services
 {
@@ -19,12 +13,12 @@ namespace Standings.Persistence.Implementations.Services
     {
         readonly IMapper _mapper;
         readonly IUnitOfWork _unitOfWork;
-        readonly IRepository<StudentExamResult> _resultRepo;
+        readonly IResultRepository _resultRepo;
         public ResultService(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
-            _resultRepo=_unitOfWork.GetRepository<StudentExamResult>();
+            _resultRepo=_unitOfWork.Results;
         }
 
         public async Task<Response<ResultCreateDTO>> CreateResult(ResultCreateDTO model)
@@ -41,7 +35,7 @@ namespace Standings.Persistence.Implementations.Services
                 }
                 else
                 {
-                    response.StatusCode = 500; // Internal Server Error
+                    response.StatusCode = 500; 
                 }
             }
             return response;
@@ -84,28 +78,40 @@ namespace Standings.Persistence.Implementations.Services
             return response;
         }
 
-
-        public async Task<Response<ResultGetDTO>> GetResultById(int id)
+        public async Task<Response<ResultUpdateDTO>> UpdateResult(ResultUpdateDTO model)
         {
-            var response = new Response<ResultGetDTO> { Data=null, StatusCode=400};
-            if (id==null)
+            var response = new Response<ResultUpdateDTO> { Data = null, StatusCode = 400 };
+
+            if (model == null)
             {
-                response.StatusCode = 400;
+                response.StatusCode = 400; // Bad Request
                 return response;
             }
-            var result = await _resultRepo.GetByIDAsync(id);
+
+            var result = await _resultRepo.GetByStudentAndExamAsync(model.StudentId, model.ExamId);
+
             if (result == null)
             {
                 response.StatusCode = 404; // Not Found
                 return response;
             }
-            throw new NotImplementedException();
+
+            _mapper.Map(model, result);
+            var isUpdated = _resultRepo.Update(result);
+
+            if (isUpdated)
+            {
+                response.Data = model;
+                response.StatusCode = 200; // OK
+            }
+            else
+            {
+                response.StatusCode = 500; // Internal Server Error
+            }
+
+            return response;
         }
 
-        public Task<Response<ResultUpdateDTO>> UpdateResult(ResultUpdateDTO model)
-        {
-            throw new NotImplementedException();
-        }
 
         public async Task<Response<List<ResultGetDTO>>> GetResultsByStudentId(int studentId)
         {
@@ -129,5 +135,31 @@ namespace Standings.Persistence.Implementations.Services
             
             return response;
         }
+
+        public async Task<Response<ResultGetDTO>> GetResultById(int examId, int studentId)
+        {
+            var response = new Response<ResultGetDTO> { Data = null, StatusCode = 400 };
+
+            if (examId <= 0 || studentId <= 0)
+            {
+                response.StatusCode = 400; // Bad Request
+                return response;
+            }
+
+            var result = await _resultRepo.GetByStudentAndExamAsync(studentId, examId);
+
+            if (result == null)
+            {
+                response.StatusCode = 404; // Not Found
+                return response;
+            }
+
+            var resultDTO = _mapper.Map<ResultGetDTO>(result);
+            response.Data = resultDTO;
+            response.StatusCode = 200; // OK
+
+            return response;
+        }
+
     }
 }

@@ -36,7 +36,9 @@ namespace Standings.Application.Validations.ExamValid
                     .MaximumLength(100).WithMessage("Exam Name must be less than 100 characters.");
 
                 RuleFor(x => x.ExamDate)
-                    .NotEmpty().WithMessage("Exam Date can't be empty");
+                    .NotEmpty().WithMessage("Exam Date can't be empty")
+                    .GreaterThan(DateTime.Now).WithMessage("Exam Date must be in the future.");
+                ;
 
                 RuleFor(x => x.Coefficient)
                     .GreaterThan(0).WithMessage("Coefficient must be greater than 0.");

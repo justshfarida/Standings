@@ -22,48 +22,6 @@ namespace Standings.Persistence.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("NormalizedName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("IdentityRole");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "90feef2e-126c-4290-9f15-eaaae56b37c3",
-                            ConcurrencyStamp = "0eca7d4a-93a4-4386-85cc-c53dbc926ca6",
-                            Name = "Student",
-                            NormalizedName = "STUDENT"
-                        },
-                        new
-                        {
-                            Id = "c21d0b80-b549-4e83-a852-6628b16ac3e8",
-                            ConcurrencyStamp = "a6fb36b3-927d-428d-9627-72ad7d52511a",
-                            Name = "Moderator",
-                            NormalizedName = "MODERATOR"
-                        },
-                        new
-                        {
-                            Id = "851fdfac-e227-4687-86e1-560ecf7133f3",
-                            ConcurrencyStamp = "db7aee5a-2c9c-4835-abe0-6d3c39d229ee",
-                            Name = "Admin",
-                            NormalizedName = "ADMIN"
-                        });
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.Property<int>("Id")
@@ -178,8 +136,8 @@ namespace Standings.Persistence.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<double>("AverageGrade")
-                        .HasColumnType("float");
+                    b.Property<float>("AverageGrade")
+                        .HasColumnType("real");
 
                     b.Property<int>("StudentId")
                         .HasColumnType("int");
@@ -191,7 +149,7 @@ namespace Standings.Persistence.Migrations
 
                     b.HasIndex("StudentId");
 
-                    b.ToTable("Average");
+                    b.ToTable("Averages");
                 });
 
             modelBuilder.Entity("Standings.Domain.Entities.AppDbContextEntity.Exam", b =>
@@ -229,9 +187,6 @@ namespace Standings.Persistence.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<double>("MaxAverage")
-                        .HasColumnType("float");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -330,12 +285,6 @@ namespace Standings.Persistence.Migrations
 
                     b.Property<double>("Grade")
                         .HasColumnType("float");
-
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ResultId")
-                        .HasColumnType("int");
 
                     b.HasKey("StudentId", "ExamId");
 

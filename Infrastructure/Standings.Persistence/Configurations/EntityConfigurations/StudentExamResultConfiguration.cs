@@ -6,7 +6,6 @@ public class StudentExamResultConfiguration : IEntityTypeConfiguration<StudentEx
 {
     public void Configure(EntityTypeBuilder<StudentExamResult> builder)
     {
-        builder.HasKey(x => x.Id);
         builder.Property(s => s.Grade)
             .IsRequired();
 

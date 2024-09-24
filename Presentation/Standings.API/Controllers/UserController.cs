@@ -33,12 +33,15 @@ namespace Standings.API.Controllers
             return StatusCode(response.StatusCode, response);
         }
         [HttpDelete]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin, Moderator, Student")]
+
         public async Task<ActionResult<Response<bool>>> Delete(string user)
         {
             var response = await _userService.DeleteUser(user);
             return StatusCode(response.StatusCode, response);
         }
         [HttpPut]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin, Moderator, Student")]
         public async Task<ActionResult<Response<bool>>> Update(UserUpdateDTO model)
         {
             var response = await _userService.UpdateUser(model);

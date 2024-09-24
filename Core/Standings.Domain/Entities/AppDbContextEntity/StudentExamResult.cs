@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Standings.Domain.Entities.AppDbContextEntity
 {
-    public class StudentExamResult:BaseEntity//StudentExamResult
+    public class StudentExamResult
     {
         public int StudentId { get; set; }
         public int ExamId { get; set; }

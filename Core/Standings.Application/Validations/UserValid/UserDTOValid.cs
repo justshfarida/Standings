@@ -46,7 +46,7 @@ namespace Standings.Application.Validations.UserValid
             // Validate UserName
             RuleFor(x => x.UserName)
                 .NotEmpty().WithMessage("User name cannot be empty")
-                .MaximumLength(50).WithMessage("User name must be less than 50 characters");
+                .MaximumLength(20).WithMessage("User name must be less than 50 characters");
 
             // Validate Email
             RuleFor(x => x.Email)

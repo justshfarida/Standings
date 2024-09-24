@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Standings.Application.Interfaces.IRepositories
 {
-    public interface IRepository<T> where T : BaseEntity
+    public interface IRepository<T> where T : class
     {
         DbSet<T> Table { get; }
         IQueryable<T> GetAll();

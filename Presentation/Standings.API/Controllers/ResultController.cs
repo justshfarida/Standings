@@ -24,15 +24,17 @@ namespace Standings.API.Controllers
             return StatusCode(response.StatusCode, response);
         }
         [HttpGet]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin, Moderator, Student")]
         public async Task<ActionResult<Response<List<ResultGetDTO>>>> GetAll()
         {
             var response = await _resultService.GetAllResults();
             return StatusCode(response.StatusCode, response);
         }
         [HttpGet("{id}")]
-        public async Task<ActionResult<Response<ResultGetDTO>>> GetById(int id)
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin, Moderator, Student")]
+        public async Task<ActionResult<Response<ResultGetDTO>>> GetById(int examId, int studentId)
         {
-            var response = await _resultService.GetResultById(id);
+            var response = await _resultService.GetResultById(examId, studentId);
             return StatusCode(response.StatusCode, response);
         }
     }

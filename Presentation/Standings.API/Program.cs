@@ -115,9 +115,10 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
         var context = services.GetRequiredService<AppDbContext>();
         var userManager = services.GetRequiredService<UserManager<User>>();
+        var roleManager=services.GetRequiredService<RoleManager<Role>>();
 
         // Seed data çağırılır
-        await context.SeedData(userManager);   
+        await context.SeedData(userManager, roleManager);   
 }
 
 // Configure the HTTP request pipeline.

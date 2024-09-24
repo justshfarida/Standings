@@ -10,7 +10,7 @@ public class ExamConfiguration : IEntityTypeConfiguration<Exam>
         // Name is required and has a max length of 50
         builder.Property(e => e.Name)
             .IsRequired()
-            .HasMaxLength(50);
+            .HasMaxLength(100);
 
         // ExamDate is required
         builder.Property(e => e.ExamDate)

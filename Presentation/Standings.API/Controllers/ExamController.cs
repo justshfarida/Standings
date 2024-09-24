@@ -21,6 +21,8 @@ namespace Standings.API.Controllers
         }
 
         [HttpGet]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin, Moderator, Student")]
+
         public async Task<ActionResult<Response<List<ExamGetDTO>>>> GetAll()
         {
             var response = await _examService.GetAllExams();
@@ -28,6 +30,8 @@ namespace Standings.API.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin, Moderator, Student")]
+
         public async Task<ActionResult<Response<ExamGetDTO>>> GetById(int id)
         {
             var response = await _examService.GetExamById(id);
@@ -35,6 +39,8 @@ namespace Standings.API.Controllers
         }
 
         [HttpGet("group/{groupId}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin, Moderator, Student")]
+
         public async Task<ActionResult<Response<List<ExamGetDTO>>>> GetByGroupId(int groupId)
         {
             var response = await _examService.ExamsByGroupId(groupId);
@@ -42,6 +48,8 @@ namespace Standings.API.Controllers
         }
 
         [HttpGet("year/{year}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin, Moderator, Student")]
+
         public async Task<ActionResult<Response<List<ExamGetDTO>>>> GetByYear(int year)
         {
             var response = await _examService.ExamsByYear(year);

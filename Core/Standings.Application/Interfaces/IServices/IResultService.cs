@@ -13,7 +13,7 @@ namespace Standings.Application.Interfaces.IServices
         Task<Response<ResultCreateDTO>> CreateResult(ResultCreateDTO model);
         Task<Response<ResultUpdateDTO>> UpdateResult(ResultUpdateDTO model);
         Task<Response<List<ResultGetDTO>>> GetAllResults();
-        Task<Response<ResultGetDTO>> GetResultById(int id);
+        Task<Response<ResultGetDTO>> GetResultById(int examId, int studentId);
         Task<Response<List<ResultGetDTO>>> GetResultsByExamId(int examId);
         Task<Response<List<ResultGetDTO>>> GetResultsByStudentId(int studentId);
     }

@@ -13,6 +13,7 @@ namespace Standings.Application.Validations.StudentValid
     {
         public StudentCreateDTOValidator()
         {
+            RuleFor(x => x.Id).NotEmpty().WithMessage("Id can not be empty").GreaterThan(0).WithMessage("ID must be greater than 0.");
             RuleFor(x => x.FirstName)
                 .NotEmpty().WithMessage("First name cannot be empty")
                 .Length(2, 30).WithMessage("First name must be between 2 and 30 characters");

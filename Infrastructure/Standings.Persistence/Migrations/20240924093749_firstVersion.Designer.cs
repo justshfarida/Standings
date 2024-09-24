@@ -12,8 +12,8 @@ using Standings.Persistence.Contexts;
 namespace Standings.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240621051311_userstydentrelationship")]
-    partial class userstydentrelationship
+    [Migration("20240924093749_firstVersion")]
+    partial class firstVersion
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -23,48 +23,6 @@ namespace Standings.Persistence.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("NormalizedName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("IdentityRole");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "55209a98-013c-4d58-8d5f-81930a20f16c",
-                            ConcurrencyStamp = "bd4502ab-9ed4-43eb-96e2-4db3072d699b",
-                            Name = "User",
-                            NormalizedName = "USER"
-                        },
-                        new
-                        {
-                            Id = "39644e73-869c-4351-b0f8-cefdaa08ce13",
-                            ConcurrencyStamp = "10dd421d-d97e-461f-af4f-4c0a6417495d",
-                            Name = "Moderator",
-                            NormalizedName = "MODERATOR"
-                        },
-                        new
-                        {
-                            Id = "bc72f051-4a37-42aa-9fb7-043c33b4fbe6",
-                            ConcurrencyStamp = "2cb24a12-253c-41a6-a40b-645966c4a90d",
-                            Name = "Admin",
-                            NormalizedName = "ADMIN"
-                        });
-                });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
@@ -180,6 +138,9 @@ namespace Standings.Persistence.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<float>("AverageGrade")
+                        .HasColumnType("real");
+
                     b.Property<int>("StudentId")
                         .HasColumnType("int");
 
@@ -190,7 +151,7 @@ namespace Standings.Persistence.Migrations
 
                     b.HasIndex("StudentId");
 
-                    b.ToTable("Average");
+                    b.ToTable("Averages");
                 });
 
             modelBuilder.Entity("Standings.Domain.Entities.AppDbContextEntity.Exam", b =>
@@ -229,9 +190,6 @@ namespace Standings.Persistence.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<double>("MaxAverage")
-                        .HasColumnType("float");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -257,27 +215,6 @@ namespace Standings.Persistence.Migrations
                     b.HasIndex("SubjectId");
 
                     b.ToTable("GroupSubjects");
-                });
-
-            modelBuilder.Entity("Standings.Domain.Entities.AppDbContextEntity.Result", b =>
-                {
-                    b.Property<int>("StudentId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ExamId")
-                        .HasColumnType("int");
-
-                    b.Property<double>("Grade")
-                        .HasColumnType("float");
-
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
-                    b.HasKey("StudentId", "ExamId");
-
-                    b.HasIndex("ExamId");
-
-                    b.ToTable("Results");
                 });
 
             modelBuilder.Entity("Standings.Domain.Entities.AppDbContextEntity.Role", b =>
@@ -340,6 +277,24 @@ namespace Standings.Persistence.Migrations
                     b.ToTable("Students");
                 });
 
+            modelBuilder.Entity("Standings.Domain.Entities.AppDbContextEntity.StudentExamResult", b =>
+                {
+                    b.Property<int>("StudentId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ExamId")
+                        .HasColumnType("int");
+
+                    b.Property<double>("Grade")
+                        .HasColumnType("float");
+
+                    b.HasKey("StudentId", "ExamId");
+
+                    b.HasIndex("ExamId");
+
+                    b.ToTable("Results");
+                });
+
             modelBuilder.Entity("Standings.Domain.Entities.AppDbContextEntity.Subject", b =>
                 {
                     b.Property<int>("Id")
@@ -398,6 +353,12 @@ namespace Standings.Persistence.Migrations
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
+
+                    b.Property<string>("RefreshToken")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("RefreshTokenEndTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
@@ -514,25 +475,6 @@ namespace Standings.Persistence.Migrations
                     b.Navigation("Subject");
                 });
 
-            modelBuilder.Entity("Standings.Domain.Entities.AppDbContextEntity.Result", b =>
-                {
-                    b.HasOne("Standings.Domain.Entities.AppDbContextEntity.Exam", "Exam")
-                        .WithMany("Results")
-                        .HasForeignKey("ExamId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Standings.Domain.Entities.AppDbContextEntity.Student", "Student")
-                        .WithMany("Results")
-                        .HasForeignKey("StudentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Exam");
-
-                    b.Navigation("Student");
-                });
-
             modelBuilder.Entity("Standings.Domain.Entities.AppDbContextEntity.Student", b =>
                 {
                     b.HasOne("Standings.Domain.Entities.AppDbContextEntity.Group", "Group")
@@ -550,6 +492,25 @@ namespace Standings.Persistence.Migrations
                     b.Navigation("Group");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Standings.Domain.Entities.AppDbContextEntity.StudentExamResult", b =>
+                {
+                    b.HasOne("Standings.Domain.Entities.AppDbContextEntity.Exam", "Exam")
+                        .WithMany("Results")
+                        .HasForeignKey("ExamId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Standings.Domain.Entities.AppDbContextEntity.Student", "Student")
+                        .WithMany("Results")
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Exam");
+
+                    b.Navigation("Student");
                 });
 
             modelBuilder.Entity("Standings.Domain.Entities.AppDbContextEntity.Exam", b =>

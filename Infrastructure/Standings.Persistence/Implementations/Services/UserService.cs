@@ -179,7 +179,7 @@ namespace Standings.Persistence.Implementations.Services
 
             if (model != null)
             {
-                var user = await _userManager.FindByIdAsync(model.UserId);
+                var user = await _userManager.FindByIdAsync(model.Id);
                 if (user == null)
                 {
                     responseModel.StatusCode = 404;
