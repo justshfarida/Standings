@@ -8,8 +8,9 @@ namespace Standings.Domain.Entities.AppDbContextEntity
         public string LastName { get; set; }
         public int GroupId { get; set; }
         public Group Group { get; set; }
+        public string Email { get; set; }
         public ICollection<StudentExamResult> Results { get; set; }
-        public string UserId { get; set; } // Ensure this matches User.Id type
+        public string? UserId { get; set; } // Ensure this matches User.Id type
         public User User { get; set; }
         public ICollection<Average> Averages { get; set; }
         //Bitirib ya bitirmeyib unini 

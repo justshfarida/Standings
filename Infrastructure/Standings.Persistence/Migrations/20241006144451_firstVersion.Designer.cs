@@ -12,7 +12,7 @@ using Standings.Persistence.Contexts;
 namespace Standings.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240924093749_firstVersion")]
+    [Migration("20241006144451_firstVersion")]
     partial class firstVersion
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -247,10 +247,11 @@ namespace Standings.Persistence.Migrations
             modelBuilder.Entity("Standings.Domain.Entities.AppDbContextEntity.Student", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
@@ -264,7 +265,6 @@ namespace Standings.Persistence.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
@@ -272,7 +272,8 @@ namespace Standings.Persistence.Migrations
                     b.HasIndex("GroupId");
 
                     b.HasIndex("UserId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[UserId] IS NOT NULL");
 
                     b.ToTable("Students");
                 });
@@ -485,9 +486,7 @@ namespace Standings.Persistence.Migrations
 
                     b.HasOne("Standings.Domain.Entities.AppDbContextEntity.User", "User")
                         .WithOne("Student")
-                        .HasForeignKey("Standings.Domain.Entities.AppDbContextEntity.Student", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("Standings.Domain.Entities.AppDbContextEntity.Student", "UserId");
 
                     b.Navigation("Group");
 

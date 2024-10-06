@@ -8,7 +8,7 @@ using Standings.Application.Models.ResponseModels;
 namespace Standings.API.Controllers
 {
     [ApiController]
-    [Route("[controller]/[action]")]
+    [Route("[controller]")]
     public class ResultController : ControllerBase
     {
         readonly IResultService _resultService;

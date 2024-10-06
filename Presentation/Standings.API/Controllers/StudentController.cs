@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace Standings.API.Controllers
 {
     [ApiController]
-    [Route("[controller]/[action]")]
+    [Route("[controller]")]
     public class StudentController : ControllerBase
     {
         private readonly IStudentService _studentService;
@@ -73,7 +73,7 @@ namespace Standings.API.Controllers
 
         [HttpPut("{id}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-        public async Task<ActionResult<Response<bool>>> Update(int id, StudentUpdateDTO model)
+        public async Task<ActionResult<Response<bool>>> Update(int id, StudentUpdateDTO model)  
         {
             var response = await _studentService.UpdateStudent(model, id);
             return StatusCode(response.StatusCode, response);

@@ -25,7 +25,25 @@ namespace Standings.Infrastructure.Implementations.Services
         public async Task<Response<ExamCreateDTO>> CreateExam(ExamCreateDTO model)
         {
             var response = new Response<ExamCreateDTO> { Data = null, StatusCode = 500 };
+            // Mövcud subjecti yoxlamaq
+            var _subjectRepo = _unitOfWork.GetRepository<Subject>();
+            var existingSubject = await _subjectRepo.GetByCondition(s => s.Name == model.SubjectName).FirstOrDefaultAsync();
+
+            // Əgər subject mövcud deyilsə, yeni subject yarat
+            if (existingSubject == null)
+            {
+                var newSubject = new Subject
+                {
+                    Name = model.SubjectName
+                };
+
+                await _subjectRepo.AddAsync(newSubject);
+                await _unitOfWork.SaveChangesAsync();
+
+                existingSubject = newSubject; // Yaradılan subjecti set et
+            }
             var exam = _mapper.Map<Exam>(model);
+            exam.SubjectId = existingSubject.Id;
             var result = await _examRepo.AddAsync(exam);
             await _unitOfWork.SaveChangesAsync();
 

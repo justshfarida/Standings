@@ -30,7 +30,35 @@ namespace Standings.Infrastructure.Implementations.Services
 
             if (studentCreateDTO != null)
             {
-                var data = _mapper.Map<Student>(studentCreateDTO);
+                //qrup var mi onu yoxla
+                var groupRepo = _unitOfWork.GetRepository<Group>();
+                var existingGroup=await groupRepo.GetByCondition(g => g.Name == studentCreateDTO.GroupName && g.Year == studentCreateDTO.GroupYear).FirstOrDefaultAsync();
+                Group group;
+                if (existingGroup != null)
+                {
+                    group=existingGroup;
+                }
+                else
+                {
+                    //  Ele bir qrup yoxdursa tezesini yarat
+                    group = new Group
+                    {
+                        Name = studentCreateDTO.GroupName,
+                        Year = studentCreateDTO.GroupYear
+                    };
+                    await groupRepo.AddAsync(group);
+                    await _unitOfWork.SaveChangesAsync();  //qrupu saxla ki id si de yaransin
+                }
+                // Əllə mapləmə - DTO-dan entitiyə məlumatları köçürürük
+                var data = new Student
+                {
+                    Id = studentCreateDTO.Id,
+                    FirstName = studentCreateDTO.FirstName,
+                    LastName = studentCreateDTO.LastName,
+                    Email = studentCreateDTO.Email,
+                    UserId = studentCreateDTO.UserId,
+                    GroupId = group.Id  // Yaradılan və ya mövcud qrupun ID-si
+                };
                 await _studentRepo.AddAsync(data);
                 int rowsAffected = await _unitOfWork.SaveChangesAsync();
 

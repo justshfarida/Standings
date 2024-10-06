@@ -129,10 +129,13 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseRouting();  // Marşrutlama burada əlavə olunur
 app.ConfigureExceptionHandler();
-
+app.UseAuthentication();
 app.UseAuthorization();
-
-app.MapControllers();
-
+// Marşrutları qeyd edin
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();  // Controller-ləri marşrutlayır
+});
 app.Run();

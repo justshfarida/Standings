@@ -7,7 +7,7 @@ namespace Standings.API.Controllers
 {
 
     [ApiController]
-    [Route("[controller]/[action]")]
+    [Route("[controller]")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin, Moderator")]
     public class RoleController : ControllerBase
     {

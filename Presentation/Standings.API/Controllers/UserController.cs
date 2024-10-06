@@ -8,7 +8,7 @@ using Standings.Application.Models.ResponseModels;
 namespace Standings.API.Controllers
 {
     [ApiController]
-    [Route("[controller]/[action]")]
+    [Route("[controller]")]
     public class UserController:ControllerBase
     {
 
@@ -19,7 +19,7 @@ namespace Standings.API.Controllers
             _userService = userService;
         }
 
-        [HttpGet]
+        [HttpGet("get-all")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         public async Task<ActionResult<Response<List<UserGetDTO>>>> GetAll()
         {
@@ -47,7 +47,7 @@ namespace Standings.API.Controllers
             var response = await _userService.UpdateUser(model);
             return StatusCode(response.StatusCode, response);
         }
-        [HttpGet]
+        [HttpGet("get-roles")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
 
         public async Task<ActionResult<Response<string>>> GetRolesOf(string userIdOrName)
@@ -55,7 +55,7 @@ namespace Standings.API.Controllers
             var response = await _userService.GetRolesOfUser(userIdOrName);
             return StatusCode(response.StatusCode, response);
         }
-        [HttpPost()]
+        [HttpPost("assign-roles")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
 
         public async Task<IActionResult> AssignRoleTo(string userId, string[] roles)

@@ -19,8 +19,8 @@ namespace Standings.Application.Validations.ExamValid
             RuleFor(x => x.Coefficient)
                 .GreaterThan(0).WithMessage("Coefficient must be greater than 0.");
 
-            RuleFor(x => x.SubjectId)
-                .GreaterThan(0).WithMessage("Subject ID must be greater than 0.");
+            RuleFor(x => x.SubjectName)
+                .NotEmpty().WithMessage("Subject name can not be empty").MaximumLength(100);
         }
 
         // validators for ExamGetDTO and ExamUpdateDTO

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace Standings.API.Controllers
 {
     [ApiController]
-    [Route("[controller]/[action]")]
+    [Route("[controller]")]
     public class ExamController : ControllerBase
     {
         private readonly IExamService _examService;

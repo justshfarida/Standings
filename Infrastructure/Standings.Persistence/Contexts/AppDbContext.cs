@@ -25,6 +25,9 @@ namespace Standings.Persistence.Contexts
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<Student>()
+            .Property(s => s.Id)
+            .ValueGeneratedNever(); // Prevents auto-generation
 
             // Configure the many-to-many relationship between Group and Subject
             modelBuilder.Entity<GroupSubjects>()
