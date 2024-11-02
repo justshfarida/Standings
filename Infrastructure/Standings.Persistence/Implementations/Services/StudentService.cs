@@ -103,7 +103,7 @@ namespace Standings.Infrastructure.Implementations.Services
         public async Task<Response<List<StudentGetDTO>>> GetAllStudents()
         {
             var responseModel = new Response<List<StudentGetDTO>>() { Data = null, StatusCode = 400 };
-            var students = await _studentRepo.GetAll().ToListAsync();
+            var students = await _studentRepo.GetAll().Include(s => s.Group).ToListAsync();//Eager Loading
 
             if (students != null)
             {
@@ -118,7 +118,8 @@ namespace Standings.Infrastructure.Implementations.Services
         public async Task<Response<StudentGetDTO>> GetStudentById(int id)
         {
             var responseModel = new Response<StudentGetDTO>() { Data = null, StatusCode = 400 };
-            var student = await _studentRepo.GetByIDAsync(id);
+            var student = await _studentRepo.GetAll().Include(s=>s.Group).FirstOrDefaultAsync(s=>s.Id==id);//getByIdAsync islede bilmirik cunki FindAsync və ya FirstOrDefaultAsync kimi birbaşa bir entiti üzərində çalışır və əlaqəli entitiləri yükləmir.
+
 
             if (student != null)
             {

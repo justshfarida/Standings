@@ -40,6 +40,7 @@ namespace Standings.Persistence.Registrations
             services.AddScoped<IRoleService, RoleService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IResultService, ResultService>();
+            services.AddScoped<IGroupService, GroupService>();
 
 
         }

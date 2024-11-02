@@ -47,7 +47,7 @@ namespace Standings.Infrastructure.Implementations.TokenServices
             {
                 claims.Add(new Claim(ClaimTypes.Role, role));
             }
-            tokenDTO.ExpirationTime= DateTime.Now.AddMinutes(2);
+            tokenDTO.ExpirationTime= DateTime.Now.AddMinutes(5);
             JwtSecurityToken securityToken = new JwtSecurityToken
                 (
                     audience: _configuration["Token:Audience"],

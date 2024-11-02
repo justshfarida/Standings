@@ -8,6 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Standings.Application.DTOS.UserDTOs;
 using Standings.Application.DTOS.ResultDTOs;
+using Standings.Application.DTOS.StudentDTOs;
+using Standings.Application.DTOS.GroupDTOs;
 
 namespace Standings.Application.Automappers
 {
@@ -24,7 +26,11 @@ namespace Standings.Application.Automappers
             CreateMap<StudentExamResult, ResultGetDTO>().ReverseMap();
             CreateMap<StudentExamResult, ResultUpdateDTO>().ReverseMap();
             CreateMap<StudentExamResult, ResultCreateDTO>().ReverseMap();
-
+            CreateMap<Student, StudentGetDTO>().ForMember(dest => dest.GroupName, opt => opt.MapFrom(src => src.Group.Name)).ReverseMap();
+            CreateMap<Student, StudentUpdateDTO>().ReverseMap();
+            CreateMap<GroupCreateDTO, Group>().ReverseMap();
+            CreateMap<GroupUpdateDTO, Group>().ReverseMap();
+            CreateMap<GroupGetDTO, Group>().ReverseMap();
         }
     }
 }
