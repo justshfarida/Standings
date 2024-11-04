@@ -9,9 +9,5 @@ namespace Standings.Application.Interfaces.IRepositories
 {
     public interface IGroupRepository:IRepository<Group>
     {
-        Task<IEnumerable<Group>> GetAllGroupsAsync();
-        Task<Group> GetByYearAsync(int year);
-        Task<IEnumerable<Student>> GetTop5StudentsAsync(int groupId);
-        Task<double> GetGroupAverageAsync(int groupId);
     }
 }

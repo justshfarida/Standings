@@ -105,29 +105,41 @@ namespace Standings.Infrastructure.Implementations.Services
             return response;
         }
 
-        public async Task<Response<List<StudentGetDTO>>> GetTop5Students(int groupId)
+        public async Task<Response<IEnumerable<StudentGetDTO>>> GetTop5Students(int groupId)
         {
-            var response = new Response<List<StudentGetDTO>> { Data = null, StatusCode = 500 };
-            var _studentRepo = _unitOfWork.GetRepository<Student>();
-            var group = await _groupRepo.GetByIDAsync(groupId);
+            var response = new Response<IEnumerable<StudentGetDTO>> { Data = null, StatusCode = 500 };
 
+            var group = await _groupRepo.GetByIDAsync(groupId);
             if (group == null)
             {
                 response.StatusCode = 404;
                 return response;
             }
 
-            var topStudents = await _studentRepo.GetByCondition(s => s.GroupId == groupId)
-                .OrderByDescending(s => s.Averages
-                    .Where(a => a.Year == group.Year)
-                    .Average(a => a.AverageGrade))
+            var _studentRepo = _unitOfWork.GetRepository<Student>();
+
+            // Retrieve students in the group and calculate their yearly averages by including Exam entity
+            var studentsWithResults = await _studentRepo.GetByCondition(s => s.GroupId == groupId)
+                .Select(s => new
+                {
+                    Student = s,
+                    YearlyAverage = s.Results
+                        .Where(r => r.Exam.ExamDate.Year == group.Year) // Filter results by the group's year
+                        .Average(r => (r.Grade * r.Exam.Coefficient) / 20.0) // Calculate average using Exam.Coefficient
+                })
+                .OrderByDescending(sr => sr.YearlyAverage) // Order by calculated average
                 .Take(5)
                 .ToListAsync();
 
-            response.Data = _mapper.Map<List<StudentGetDTO>>(topStudents);
+            // Map the top 5 students to StudentGetDTO and set the response data
+            var topStudentsDTO = _mapper.Map<IEnumerable<StudentGetDTO>>(studentsWithResults.Select(sr => sr.Student));
+            response.Data = topStudentsDTO;
             response.StatusCode = 200;
+
             return response;
         }
+
+
 
         public async Task<Response<double>> GetGroupAverage(int groupId)
         {
@@ -141,11 +153,13 @@ namespace Standings.Infrastructure.Implementations.Services
 
             var _studentRepo = _unitOfWork.GetRepository<Student>();
             var students = await _studentRepo.GetByCondition(s => s.GroupId == groupId).ToListAsync();
+
+            // Calculate each student's average for the group's year using Exam.ExamDate and Exam.Coefficient
             var groupYearAverages = students
-                .Select(s => s.Averages
-                    .Where(a => a.Year == group.Year)
-                    .Average(a => a.AverageGrade))
-                .Where(avg => !double.IsNaN(avg))
+                .Select(s => s.Results
+                    .Where(r => r.Exam.ExamDate.Year == group.Year)  // Filter by ExamDate year
+                    .Average(r => (r.Grade * r.Exam.Coefficient) / 20.0))  // Calculate average using Exam.Coefficient
+                .Where(avg => !double.IsNaN(avg))  // Exclude students without results for the year
                 .ToList();
 
             response.Data = groupYearAverages.Any() ? groupYearAverages.Average() : 0.0;

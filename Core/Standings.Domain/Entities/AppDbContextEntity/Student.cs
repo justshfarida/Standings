@@ -12,7 +12,6 @@ namespace Standings.Domain.Entities.AppDbContextEntity
         public ICollection<StudentExamResult> Results { get; set; }
         public string? UserId { get; set; } // Ensure this matches User.Id type
         public User User { get; set; }
-        public ICollection<Average> Averages { get; set; }
         //Bitirib ya bitirmeyib unini 
         //Gpa i 
     }

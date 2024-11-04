@@ -20,7 +20,7 @@ namespace Standings.Persistence.Contexts
         public DbSet<StudentExamResult> Results { get; set; }
         public DbSet<Exam> Exams { get; set; }
         public DbSet<Subject> Subjects { get; set; }
-        public DbSet<Average> Averages { get; set; }
+        public DbSet<GroupSubjects> GroupSubjects { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -62,11 +62,6 @@ namespace Standings.Persistence.Contexts
                 .HasOne(res => res.Student)
                 .WithMany(st => st.Results)
                 .HasForeignKey(res => res.StudentId);
-            //Configure the one-to-many relationship between Student and Average
-            modelBuilder.Entity<Average>().
-                HasOne(av=>av.Student).
-                WithMany(s=>s.Averages).
-                HasForeignKey(av => av.StudentId);
         
 
         }

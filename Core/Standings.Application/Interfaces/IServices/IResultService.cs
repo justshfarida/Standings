@@ -1,4 +1,5 @@
 ﻿using Standings.Application.DTOS.ResultDTOs;
+using Standings.Application.Interfaces.IUnitOfWorks;
 using Standings.Application.Models.ResponseModels;
 using System;
 using System.Collections.Generic;
@@ -16,5 +17,7 @@ namespace Standings.Application.Interfaces.IServices
         Task<Response<ResultGetDTO>> GetResultById(int examId, int studentId);
         Task<Response<List<ResultGetDTO>>> GetResultsByExamId(int examId);
         Task<Response<List<ResultGetDTO>>> GetResultsByStudentId(int studentId);
-    }
+        Task<Response<bool>> DeleteResult(int examId, int studentId);
+        }
+
 }

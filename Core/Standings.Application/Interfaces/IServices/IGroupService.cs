@@ -12,7 +12,7 @@ namespace Standings.Application.Interfaces.IServices
         Task<Response<bool>> DeleteGroup(int id);
         Task<Response<List<GroupGetDTO>>> GetAllGroups();
         Task<Response<GroupGetDTO>> GetGroupByYear(int year);
-        Task<Response<List<StudentGetDTO>>> GetTop5Students(int groupId);
+        Task<Response<IEnumerable<StudentGetDTO>>> GetTop5Students(int groupId);
         Task<Response<double>> GetGroupAverage(int groupId);
         Task<Response<bool>> UpdateGroup(GroupUpdateDTO model, int id);
     }

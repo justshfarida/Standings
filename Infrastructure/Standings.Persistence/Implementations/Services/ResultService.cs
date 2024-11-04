@@ -160,6 +160,38 @@ namespace Standings.Persistence.Implementations.Services
 
             return response;
         }
+        public async Task<Response<bool>> DeleteResult(int examId, int studentId)
+        {
+            var response = new Response<bool> { Data = false, StatusCode = 400 };
+
+            if (examId <= 0 || studentId <= 0)
+            {
+                response.StatusCode = 400; // Bad Request
+                return response;
+            }
+
+            var result = await _resultRepo.GetByStudentAndExamAsync(studentId, examId);
+
+            if (result == null)
+            {
+                response.StatusCode = 404; // Not Found
+              return response;
+            }
+
+            var isDeleted = _resultRepo.Remove(result);
+            if (isDeleted)
+            {
+                await _unitOfWork.SaveChangesAsync();
+                response.Data = true;
+                response.StatusCode = 200; // OK
+            }
+            else
+            {
+                response.StatusCode = 500; // Internal Server Error
+            }
+
+            return response;
+        }
 
     }
 }

@@ -134,8 +134,10 @@ namespace Standings.Infrastructure.Implementations.Services
         public async Task<Response<List<StudentGetDTO>>> StudentsByGroupId(int id)
         {
             var responseModel = new Response<List<StudentGetDTO>>() { Data = null, StatusCode = 400 };
-            var students = _studentRepo.GetByCondition(s => s.GroupId == id);
-
+            // Include the related Group entity to access Group.Name
+            var students = await _studentRepo.GetByCondition(s => s.GroupId == id)
+                                             .Include(s => s.Group)
+                                             .ToListAsync();
             if (students != null)
             {
                 var data = _mapper.Map<List<StudentGetDTO>>(students);

@@ -6,6 +6,7 @@ using Standings.Application.Interfaces.IServices;
 using Standings.Application.Interfaces.IUnitOfWorks;
 using Standings.Application.Models.ResponseModels;
 using Standings.Domain.Entities.AppDbContextEntity;
+using Standings.Persistence.Contexts;
 
 namespace Standings.Infrastructure.Implementations.Services
 {
@@ -14,12 +15,16 @@ namespace Standings.Infrastructure.Implementations.Services
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IRepository<Exam> _examRepo;
+        private readonly IRepository<Group> _groupRepo;
+        private readonly AppDbContext _context;
 
-        public ExamService(IMapper mapper, IUnitOfWork unitOfWork)
+
+        public ExamService(IMapper mapper, IUnitOfWork unitOfWork, AppDbContext context)
         {
             _mapper = mapper;
             _unitOfWork = unitOfWork;
             _examRepo = _unitOfWork.GetRepository<Exam>();
+            _context = context; // Direct access to DbContext
         }
 
         public async Task<Response<ExamCreateDTO>> CreateExam(ExamCreateDTO model)
@@ -69,16 +74,38 @@ namespace Standings.Infrastructure.Implementations.Services
             return response;
         }
 
-        public async Task<Response<List<ExamGetDTO>>> ExamsByGroupId(int id)
+        public async Task<Response<List<ExamGetDTO>>> ExamsByGroupId(int groupId)
         {
             var response = new Response<List<ExamGetDTO>> { Data = null, StatusCode = 500 };
-            var exams = _examRepo.GetByCondition(x => x.SubjectId == id);
-            if (exams != null)
+
+            // Check if the group exists
+            var group = await _unitOfWork.GetRepository<Group>().GetByIDAsync(groupId);
+            if (group == null)
             {
-                var examDTOs = _mapper.Map<List<ExamGetDTO>>(exams);
-                response.Data = examDTOs;
-                response.StatusCode = 200;
+                response.StatusCode = 404;
+                return response;
             }
+
+            // Use _context to access GroupSubjects directly
+            var subjectIds = await _context.GroupSubjects
+                                           .Where(gs => gs.GroupId == groupId)
+                                           .Select(gs => gs.SubjectId)
+                                           .ToListAsync();
+
+            if (!subjectIds.Any())
+            {
+                response.StatusCode = 404;
+                return response;
+            }
+
+            // Retrieve exams associated with the subjects found
+            var exams = await _examRepo.GetByCondition(e => subjectIds.Contains(e.SubjectId))
+                                       .ToListAsync();
+
+            // Map exams to DTOs and set the response
+            var examDTOs = _mapper.Map<List<ExamGetDTO>>(exams);
+            response.Data = examDTOs;
+            response.StatusCode = 200;
 
             return response;
         }
