@@ -44,7 +44,9 @@ namespace Standings.Persistence.Implementations.Services
         public async Task<Response<List<ResultGetDTO>>> GetAllResults()
         {
             Response<List<ResultGetDTO>> response = new Response<List<ResultGetDTO>>() { Data = null, StatusCode = 400 };
-            var results= _resultRepo.GetAll().ToList();
+            var results = await _resultRepo.GetAll()
+                                   .Include(r => r.Exam)  // Ensure Exam data is loaded
+                                   .ToListAsync();
             if (results!=null)
             {
                 var resultDTOs=_mapper.Map<List<ResultGetDTO>>(results);
@@ -58,22 +60,27 @@ namespace Standings.Persistence.Implementations.Services
         {
             var response = new Response<List<ResultGetDTO>> { Data = null, StatusCode = 400 };
 
-            if (examId==null)
+            if (examId <= 0)
             {
-                response.StatusCode = 400; 
+                response.StatusCode = 400;
                 return response;
             }
-            var results = await _resultRepo.GetByCondition(r => r.ExamId == examId).ToListAsync();
+
+            // Load results with Exam data to access ExamName
+            var results = await _resultRepo.GetByCondition(r => r.ExamId == examId)
+                                           .Include(r => r.Exam)  // Ensure Exam is included
+                                           .ToListAsync();
 
             if (results == null || !results.Any())
             {
-                 response.StatusCode = 404; // Not Found
-                 return response;
-             }
+                response.StatusCode = 404; 
+                return response;
+            }
 
-                var resultDTOs = _mapper.Map<List<ResultGetDTO>>(results);
-                response.Data = resultDTOs;
-                response.StatusCode = 200; // OK
+            // Map results to ResultGetDTO using AutoMapper
+            var resultDTOs = _mapper.Map<List<ResultGetDTO>>(results);
+            response.Data = resultDTOs;
+            response.StatusCode = 200; // OK
 
             return response;
         }
@@ -88,7 +95,7 @@ namespace Standings.Persistence.Implementations.Services
                 return response;
             }
 
-            var result = await _resultRepo.GetByStudentAndExamAsync(model.StudentId, model.ExamId);
+            var result = await _resultRepo.GetByIDAsync(model.Id);
 
             if (result == null)
             {
@@ -135,42 +142,45 @@ namespace Standings.Persistence.Implementations.Services
             
             return response;
         }
-
-        public async Task<Response<ResultGetDTO>> GetResultById(int examId, int studentId)
+        public async Task<Response<ResultGetDTO>> GetResultById(int resultId)
         {
             var response = new Response<ResultGetDTO> { Data = null, StatusCode = 400 };
-
-            if (examId <= 0 || studentId <= 0)
+            if(resultId<=0)
             {
-                response.StatusCode = 400; // Bad Request
+                response.StatusCode = 400;
                 return response;
             }
 
-            var result = await _resultRepo.GetByStudentAndExamAsync(studentId, examId);
+            // Load the result with Exam data to access ExamName
+            var result = await _resultRepo.GetByCondition(r => r.Id == resultId)
+                                          .Include(r => r.Exam)  // Ensure Exam is included
+                                          .FirstOrDefaultAsync();
 
             if (result == null)
             {
-                response.StatusCode = 404; // Not Found
+                response.StatusCode = 404;
                 return response;
             }
 
+            // Map result to ResultGetDTO using AutoMapper
             var resultDTO = _mapper.Map<ResultGetDTO>(result);
             response.Data = resultDTO;
-            response.StatusCode = 200; // OK
+            response.StatusCode = 200; 
 
             return response;
         }
-        public async Task<Response<bool>> DeleteResult(int examId, int studentId)
+
+        public async Task<Response<bool>> DeleteResult(int resultId)
         {
             var response = new Response<bool> { Data = false, StatusCode = 400 };
 
-            if (examId <= 0 || studentId <= 0)
+            if (resultId<= 0)
             {
                 response.StatusCode = 400; // Bad Request
                 return response;
             }
 
-            var result = await _resultRepo.GetByStudentAndExamAsync(studentId, examId);
+            var result = await _resultRepo.GetByIDAsync(resultId);
 
             if (result == null)
             {

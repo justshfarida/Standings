@@ -23,7 +23,9 @@ namespace Standings.Application.Automappers
             CreateMap<User, UserCreateDTO>().ReverseMap();
             CreateMap<User, UserUpdateDTO>().ReverseMap();
             CreateMap<User, UserGetDTO>().ReverseMap();
-            CreateMap<StudentExamResult, ResultGetDTO>().ReverseMap();
+            CreateMap<StudentExamResult, ResultGetDTO>()
+               .ForMember(dest => dest.ExamName, opt => opt.MapFrom(src => src.Exam.Name))
+               .ReverseMap();
             CreateMap<StudentExamResult, ResultUpdateDTO>().ReverseMap();
             CreateMap<StudentExamResult, ResultCreateDTO>().ReverseMap();
             CreateMap<Student, StudentGetDTO>().ForMember(dest => dest.GroupName, opt => opt.MapFrom(src => src.Group.Name)).ReverseMap();

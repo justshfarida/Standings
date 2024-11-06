@@ -254,8 +254,11 @@ namespace Standings.Persistence.Migrations
 
             modelBuilder.Entity("Standings.Domain.Entities.AppDbContextEntity.StudentExamResult", b =>
                 {
-                    b.Property<int>("StudentId")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<int>("ExamId")
                         .HasColumnType("int");
@@ -263,9 +266,14 @@ namespace Standings.Persistence.Migrations
                     b.Property<double>("Grade")
                         .HasColumnType("float");
 
-                    b.HasKey("StudentId", "ExamId");
+                    b.Property<int>("StudentId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
 
                     b.HasIndex("ExamId");
+
+                    b.HasIndex("StudentId");
 
                     b.ToTable("Results");
                 });

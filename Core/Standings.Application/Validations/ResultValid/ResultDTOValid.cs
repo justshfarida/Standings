@@ -22,7 +22,7 @@ public class ResultGetDTOValidator : AbstractValidator<ResultGetDTO>
         RuleFor(x => x.StudentId).NotEmpty().WithMessage("StudentId can not be empty")
             .GreaterThan(0).WithMessage("Student Id must be greater than 0.");
 
-        RuleFor(x => x.ExamId).NotEmpty().WithMessage("ExamId can not be empty").GreaterThan(0).WithMessage("Exam Id must be greater than 0.");
+        RuleFor(x => x.ExamName).NotEmpty().WithMessage("Exam Name can not be empty");
 
         RuleFor(x => x.Grade).InclusiveBetween(0, 20)
             .WithMessage("Grade must be between 0 and 20");

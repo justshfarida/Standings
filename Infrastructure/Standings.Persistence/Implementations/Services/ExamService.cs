@@ -30,11 +30,12 @@ namespace Standings.Infrastructure.Implementations.Services
         public async Task<Response<ExamCreateDTO>> CreateExam(ExamCreateDTO model)
         {
             var response = new Response<ExamCreateDTO> { Data = null, StatusCode = 500 };
-            // Mövcud subjecti yoxlamaq
             var _subjectRepo = _unitOfWork.GetRepository<Subject>();
+
+            // Step 1: Check if the subject exists
             var existingSubject = await _subjectRepo.GetByCondition(s => s.Name == model.SubjectName).FirstOrDefaultAsync();
 
-            // Əgər subject mövcud deyilsə, yeni subject yarat
+            // Step 2: If the subject doesn't exist, create it
             if (existingSubject == null)
             {
                 var newSubject = new Subject
@@ -42,23 +43,53 @@ namespace Standings.Infrastructure.Implementations.Services
                     Name = model.SubjectName
                 };
 
-                await _subjectRepo.AddAsync(newSubject);
-                await _unitOfWork.SaveChangesAsync();
-
-                existingSubject = newSubject; // Yaradılan subjecti set et
+                try
+                {
+                    await _subjectRepo.AddAsync(newSubject);
+                    await _unitOfWork.SaveChangesAsync();
+                    existingSubject = newSubject;
+                }
+                catch (DbUpdateException ex) when (ex.InnerException?.Message.Contains("UNIQUE") == true)
+                {
+                    // Retrieve the existing subject if unique constraint violation occurs
+                    existingSubject = await _subjectRepo.GetByCondition(s => s.Name == model.SubjectName).FirstOrDefaultAsync();
+                }
             }
-            var exam = _mapper.Map<Exam>(model);
-            exam.SubjectId = existingSubject.Id;
+
+            // Step 3: Check if an exam with the same name and subject already exists
+            var existingExam = await _examRepo.GetByCondition(e => e.Name == model.Name && e.SubjectId == existingSubject.Id).FirstOrDefaultAsync();
+            if (existingExam != null)
+            {
+                response.StatusCode = 409; // Conflict
+                return response;
+            }
+
+            // Step 4: Create the new exam
+            var exam = new Exam
+            {
+                Name = model.Name,
+                ExamDate = model.ExamDate,
+                Coefficient = model.Coefficient,
+                SubjectId = existingSubject.Id
+            };
+
             var result = await _examRepo.AddAsync(exam);
             await _unitOfWork.SaveChangesAsync();
 
             if (result)
             {
-                response.Data = _mapper.Map<ExamCreateDTO>(exam);
+                response.Data = new ExamCreateDTO
+                {
+                    Name = exam.Name,
+                    ExamDate = exam.ExamDate,
+                    Coefficient = exam.Coefficient,
+                    SubjectName = existingSubject.Name
+                };
                 response.StatusCode = 201;
             }
             return response;
         }
+
 
         public async Task<Response<bool>> DeleteExam(int id)
         {

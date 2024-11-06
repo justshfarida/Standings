@@ -59,6 +59,8 @@ namespace Standings.Persistence.Contexts
 
             // StudentExamResult -> Student əlaqəsi
             modelBuilder.Entity<StudentExamResult>()
+           .HasKey(r => r.Id);  // Set ResultId as the primary key
+            modelBuilder.Entity<StudentExamResult>()
                 .HasOne(res => res.Student)
                 .WithMany(st => st.Results)
                 .HasForeignKey(res => res.StudentId);
