@@ -10,7 +10,8 @@ namespace Standings.Application.DTOS.ResultDTOs
     {
         public int Id {  get; set; }
         public int StudentId { get; set; }
-        public int ExamName { get; set; }
+        public string ExamName { get; set; }
         public double Grade { get; set; }
+        public string SubjectName { get; set; }
     }
 }

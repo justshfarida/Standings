@@ -36,11 +36,11 @@ namespace Standings.API.Controllers
             return StatusCode(response.StatusCode, response);
         }
 
-        [HttpGet("{examId}/{studentId}")]
+        [HttpGet("{id}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin, Moderator, Student")]
-        public async Task<ActionResult<Response<ResultGetDTO>>> GetById(int resultId)
+        public async Task<ActionResult<Response<ResultGetDTO>>> GetById(int id)
         {
-            var response = await _resultService.GetResultById(resultId);
+            var response = await _resultService.GetResultById(id);
             return StatusCode(response.StatusCode, response);
         }
 
@@ -68,11 +68,11 @@ namespace Standings.API.Controllers
             return StatusCode(response.StatusCode, response);
         }
 
-        [HttpDelete("{examId}/{studentId}")]
+        [HttpDelete("{id}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin, Moderator")]
-        public async Task<ActionResult<Response<bool>>> Delete(int resultId)
+        public async Task<ActionResult<Response<bool>>> Delete(int id)
         {
-            var response = await _resultService.DeleteResult(resultId);
+            var response = await _resultService.DeleteResult(id);
             return StatusCode(response.StatusCode, response);
         }
     }

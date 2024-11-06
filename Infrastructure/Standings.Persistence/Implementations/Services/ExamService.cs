@@ -144,7 +144,7 @@ namespace Standings.Infrastructure.Implementations.Services
         public async Task<Response<List<ExamGetDTO>>> ExamsByYear(int year)
         {
             var response = new Response<List<ExamGetDTO>> { Data = null, StatusCode = 500 };
-            var exams = _examRepo.GetByCondition(x => x.ExamDate.Year == year);
+            var exams = _examRepo.GetByCondition(x => x.ExamDate.Year == year).Include(e => e.Subject); // if Subject is related
             if (exams != null)
             {
                 var examDTOs = _mapper.Map<List<ExamGetDTO>>(exams);

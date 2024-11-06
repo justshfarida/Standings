@@ -23,38 +23,52 @@ namespace Standings.Persistence.Implementations.Services
 
         public async Task<Response<ResultCreateDTO>> CreateResult(ResultCreateDTO model)
         {
-            Response<ResultCreateDTO> response = new Response<ResultCreateDTO>() { Data = null, StatusCode = 400 };
+            var response = new Response<ResultCreateDTO> { Data = null, StatusCode = 400 };
             if (model != null)
-            { 
-                var result=_mapper.Map<StudentExamResult>(model);
+            {
+                // Map the DTO to the entity
+                var result = _mapper.Map<StudentExamResult>(model);
+
+                // Add the result to the repository
                 var added = await _resultRepo.AddAsync(result);
-                if (added==true)
+
+                // Save changes to the database
+                await _unitOfWork.SaveChangesAsync();
+
+                // Set response based on the result of the addition
+                if (added)
                 {
                     response.Data = model;
                     response.StatusCode = 201;
                 }
                 else
                 {
-                    response.StatusCode = 500; 
+                    response.StatusCode = 500;
                 }
             }
             return response;
         }
 
+
         public async Task<Response<List<ResultGetDTO>>> GetAllResults()
         {
             Response<List<ResultGetDTO>> response = new Response<List<ResultGetDTO>>() { Data = null, StatusCode = 400 };
+
             var results = await _resultRepo.GetAll()
-                                   .Include(r => r.Exam)  // Ensure Exam data is loaded
-                                   .ToListAsync();
-            if (results!=null)
+                                           .Include(r => r.Exam)  // Include Exam data
+                                           .ThenInclude(e => e.Subject)  // Include Subject data through Exam
+                                           .ToListAsync();
+
+            if (results != null)
             {
-                var resultDTOs=_mapper.Map<List<ResultGetDTO>>(results);
+                var resultDTOs = _mapper.Map<List<ResultGetDTO>>(results);
                 response.Data = resultDTOs;
                 response.StatusCode = 200;
             }
+
             return response;
         }
+
 
         public async Task<Response<List<ResultGetDTO>>> GetResultsByExamId(int examId)
         {
@@ -66,14 +80,15 @@ namespace Standings.Persistence.Implementations.Services
                 return response;
             }
 
-            // Load results with Exam data to access ExamName
+            // Load results with Exam and Subject data
             var results = await _resultRepo.GetByCondition(r => r.ExamId == examId)
-                                           .Include(r => r.Exam)  // Ensure Exam is included
+                                           .Include(r => r.Exam)         // Include Exam data
+                                           .ThenInclude(e => e.Subject)  // Include Subject data within Exam
                                            .ToListAsync();
 
             if (results == null || !results.Any())
             {
-                response.StatusCode = 404; 
+                response.StatusCode = 404;
                 return response;
             }
 
@@ -84,6 +99,7 @@ namespace Standings.Persistence.Implementations.Services
 
             return response;
         }
+
 
         public async Task<Response<ResultUpdateDTO>> UpdateResult(ResultUpdateDTO model)
         {
@@ -145,15 +161,17 @@ namespace Standings.Persistence.Implementations.Services
         public async Task<Response<ResultGetDTO>> GetResultById(int resultId)
         {
             var response = new Response<ResultGetDTO> { Data = null, StatusCode = 400 };
-            if(resultId<=0)
+
+            if (resultId <= 0)
             {
                 response.StatusCode = 400;
                 return response;
             }
 
-            // Load the result with Exam data to access ExamName
+            // Load the result with Exam and Subject data
             var result = await _resultRepo.GetByCondition(r => r.Id == resultId)
-                                          .Include(r => r.Exam)  // Ensure Exam is included
+                                          .Include(r => r.Exam)         // Include Exam data
+                                          .ThenInclude(e => e.Subject)  // Include Subject data within Exam
                                           .FirstOrDefaultAsync();
 
             if (result == null)
@@ -165,10 +183,11 @@ namespace Standings.Persistence.Implementations.Services
             // Map result to ResultGetDTO using AutoMapper
             var resultDTO = _mapper.Map<ResultGetDTO>(result);
             response.Data = resultDTO;
-            response.StatusCode = 200; 
+            response.StatusCode = 200;
 
             return response;
         }
+
 
         public async Task<Response<bool>> DeleteResult(int resultId)
         {

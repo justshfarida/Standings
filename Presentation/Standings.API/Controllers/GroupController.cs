@@ -76,5 +76,13 @@ namespace Standings.API.Controllers
             var response = await _groupService.UpdateGroup(model, id);
             return StatusCode(response.StatusCode, response);
         }
+
+        [HttpPost("{groupId}/subjects/{subjectId}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin, Moderator")]
+        public async Task<IActionResult> AddSubjectToGroup(int groupId, int subjectId)
+        {
+            var response = await _groupService.AddSubjectToGroup(groupId, subjectId);
+            return StatusCode(response.StatusCode, response);
+        }
     }
 }

@@ -139,8 +139,6 @@ namespace Standings.Infrastructure.Implementations.Services
             return response;
         }
 
-
-
         public async Task<Response<double>> GetGroupAverage(int groupId)
         {
             var response = new Response<double> { Data = 0.0, StatusCode = 500 };
@@ -187,5 +185,45 @@ namespace Standings.Infrastructure.Implementations.Services
             }
             return response;
         }
+        public async Task<Response<bool>> AddSubjectToGroup(int groupId, int subjectId)
+        {
+            var response = new Response<bool> { Data = false, StatusCode = 500 };
+
+            // Check if the group exists and include GroupSubjects
+            var group = await _groupRepo.GetAll()
+                .Include(g => g.GroupSubjects)
+                .FirstOrDefaultAsync(g => g.Id == groupId);
+
+            if (group == null)
+            {
+                response.StatusCode = 404;
+                return response;
+            }
+
+            // Check if the subject exists
+            var _subjectRepo = _unitOfWork.GetRepository<Subject>();
+            var subject = await _subjectRepo.GetByIDAsync(subjectId);
+            if (subject == null)
+            {
+                response.StatusCode = 404;
+                return response;
+            }
+
+            // Add the subject to the group if not already associated
+            if (!group.GroupSubjects.Any(gs => gs.SubjectId == subjectId))
+            {
+                group.GroupSubjects.Add(new GroupSubjects { GroupId = groupId, SubjectId = subjectId });
+                await _unitOfWork.SaveChangesAsync();
+                response.Data = true;
+                response.StatusCode = 200;
+            }
+            else
+            {
+                response.StatusCode = 409;
+            }
+
+            return response;
+        }
+
     }
 }
