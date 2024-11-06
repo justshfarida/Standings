@@ -90,10 +90,4 @@ Below are some primary endpoints available in the API:
 4. Push to the branch.
 5. Open a pull request.
 
-## License
-
-This project is licensed under the MIT License.
-
----
-
 **Note**: For detailed API documentation, refer to the Swagger documentation available at `https://localhost:5001/swagger` when the application is running.
