@@ -18,6 +18,8 @@ namespace Standings.Application.Interfaces.IServices
         Task<Response<List<ResultGetDTO>>> GetResultsByExamId(int examId);
         Task<Response<List<ResultGetDTO>>> GetResultsByStudentId(int studentId);
         Task<Response<bool>> DeleteResult(int resultId);
+        Task<Response<double>> GetGroupAverageForExamAsync(int groupId, int examId);
+
         }
 
 }

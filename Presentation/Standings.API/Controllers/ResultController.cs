@@ -75,5 +75,14 @@ namespace Standings.API.Controllers
             var response = await _resultService.DeleteResult(id);
             return StatusCode(response.StatusCode, response);
         }
+        [HttpGet("ExamAverage/{examId}/{groupId}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin, Moderator, Student")]
+        public async Task<ActionResult<Response<double>>> GetGroupAverageForExam(int examId, int groupId)
+        {
+            var response = await _resultService.GetGroupAverageForExamAsync(groupId, examId); // Pass groupId first, then examId
+            return StatusCode(response.StatusCode, response);
+        }
+
+
     }
 }

@@ -222,5 +222,43 @@ namespace Standings.Persistence.Implementations.Services
             return response;
         }
 
+        public async Task<Response<double>> GetGroupAverageForExamAsync(int groupId, int examId)
+        {
+            var response = new Response<double> { Data = 0.0, StatusCode = 400 };
+
+            if (examId <= 0 || groupId <= 0)
+            {
+                response.StatusCode = 400;
+                return response;
+            }
+
+            // First, load results by ExamId
+            var results = await _resultRepo.GetByCondition(r => r.ExamId == examId)
+                                           .Include(r => r.Student) // Include Student to access GroupId
+                                           .ToListAsync();
+
+            if (results == null || !results.Any())
+            {
+                response.StatusCode = 404;
+                return response;
+            }
+
+            // Then, filter results to match the specific GroupId
+            var groupResults = results.Where(r => r.Student.GroupId == groupId).ToList();
+
+            if (!groupResults.Any())
+            {
+                response.StatusCode = 404;
+                return response;
+            }
+
+            // Calculate the average grade for the specified exam and group
+            response.Data = groupResults.Average(r => r.Grade);
+            response.StatusCode = 200;
+
+            return response;
+        }
+
+
     }
 }

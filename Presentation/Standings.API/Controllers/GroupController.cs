@@ -45,13 +45,13 @@ namespace Standings.API.Controllers
             return StatusCode(response.StatusCode, response);
         }
 
-        [HttpGet("{groupId}/average")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin, Moderator, Student")]
-        public async Task<ActionResult<Response<double>>> GetGroupAverage(int groupId)
-        {
-            var response = await _groupService.GetGroupAverage(groupId);
-            return StatusCode(response.StatusCode, response);
-        }
+        //[HttpGet("{groupId}/average")]
+        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin, Moderator, Student")]
+        //public async Task<ActionResult<Response<double>>> GetGroupAverage(int groupId)
+        //{
+        //    var response = await _groupService.GetGroupAverage(groupId);
+        //    return StatusCode(response.StatusCode, response);
+        //}
 
         [HttpPost]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin, Moderator")]
@@ -77,7 +77,7 @@ namespace Standings.API.Controllers
             return StatusCode(response.StatusCode, response);
         }
 
-        [HttpPost("{groupId}/subjects/{subjectId}")]
+        [HttpPost("AssignSubject{groupId}/{subjectId}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin, Moderator")]
         public async Task<IActionResult> AddSubjectToGroup(int groupId, int subjectId)
         {
